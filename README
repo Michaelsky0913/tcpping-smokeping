@@ -1,0 +1,43 @@
+tcpping-smokeping
+================================================================================
+
+A minimal replacement for tcpping intended to be used with SmokePing. The
+implementation uses the TCP support in recent versions of traceroute instead of
+tcptraceroute. One of the reasons for using traceroute rather than
+tcptraceroute is that the latter will only output "Got root?" when trying to
+use it as a normal user, even if the binary is marked with the cap_net_raw
+capability.
+
+To use tcpping-smokeping, just point SmokePing at the tcpping-smokeping script
+by setting the binary key in the TCPPing subsection in the Probes section:
+
+    + TCPPing
+    binary = /etc/smokeping/tcpping-smokeping
+
+
+The script expects to be invoked as follows:
+
+    /path/to/tcpping-smokeping -C -x PINGS TARGET [PORT]
+
+where PINGS is the number of pings SmokePing is configured to send to the
+TARGET, and the optional parameter PORT is the port to probe.
+
+
+tcpping-smokeping requires the traceroute binary to either have the cap_net_raw
+capability (preferred), or to be marked SUID.
+
+You can apply the cap_net_raw capability by running e.g:
+
+    setcap cap_net_raw+ep /usr/bin/traceroute
+
+and verify with:
+
+    getcap /usr/bin/traceroute
+
+
+If the script is not working correctly with SmokePing, you can debug it by
+adding -x to the sh parameters in the first line of the script and manually
+invoke it as the user SmokePing is running under.
+
+
+tcpping-smokeping is licensed under the ISC license.
